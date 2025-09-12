@@ -1,4 +1,3 @@
-#directed graph
 class Graph:
     def __init__(self, V=None, E=None, directed=False):
         """
@@ -24,15 +23,29 @@ class Graph:
         # add the edge
         self.E.append((u, v, weight))
 
-        # if undirected, add the reverse edge
+        # if undirected, add the reverse edge automatically
         if not self.directed:
             self.E.append((v, u, weight))
-    
+
     def inverse(self):
         """
-        Returns a new Graph G^T with same nodes and all edges reversed
+        Returns a new Graph G^T with same nodes and all edges reversed.
+        - For directed graphs: reverse edge directions
+        - For undirected graphs: return a copy (since G == G^T)
         """
+        if not self.directed:
+            # undirected graph → transpose = same graph
+            return Graph(V=list(self.V), E=list(self.E), directed=self.directed)
+
+        # directed graph → reverse edges
         GT = Graph(V=list(self.V), directed=self.directed)
-        for u, v in self.E:
-            GT.add_edge(v, u)  # reverse the edge
+        for edge in self.E:
+            if len(edge) == 2:
+                u, v = edge
+                GT.add_edge(v, u)
+            elif len(edge) == 3:
+                u, v, w = edge
+                GT.add_edge(v, u, w)
+            else:
+                raise ValueError("Edges must be (u,v) or (u,v,w)")
         return GT
